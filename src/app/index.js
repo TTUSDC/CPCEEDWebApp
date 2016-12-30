@@ -21,7 +21,8 @@ const appRoute = {
         require.ensure([], (require) => {
             callback(null, [
                 require('./routes/Register'),
-                require('./routes/Login')
+                require('./routes/Login'),
+                require('./routes/Events')
             ])
         })
     }

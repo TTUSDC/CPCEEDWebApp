@@ -21,6 +21,9 @@ class Nav extends React.Component {
                         <Button label='Login' onClick={() => {
                             hashHistory.push('/login/');
                         }}/>
+                        <Button label='Events' onClick={() => {
+                            hashHistory.push('/events/');
+                        }}/>
                     </Navigation>
                 </AppBar>
                 {this.props.children}
