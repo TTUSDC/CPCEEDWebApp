@@ -8,16 +8,9 @@ class Events extends React.Component {
 	render () {
 		return (<div>
 				<h2>Events</h2>
-				<Card>
-					<CardTitle title="Some Event" subtitle="More info."/>
-					<CardMedia/>
-					<CardActions theme="card">
-						<Button label="Details"/>
-						<Button label="RSVP"/>
-					</CardActions>
-				</Card>
+				
 			</div>);
 	}
 }
 
-module.exports = Events;
+export default Events;

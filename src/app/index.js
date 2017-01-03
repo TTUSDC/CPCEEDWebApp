@@ -1,13 +1,14 @@
 import React from 'react'
 import { render } from 'react-dom'
 import { Router, Route, hashHistory, IndexRoute } from 'react-router'
+import auth from './auth'
 
 const appRoute = {
     path: '/',
 
     getComponent(nextState, callback) {
         require.ensure([], (require) => {
-            callback(null, require('./components/NavBar'))
+            callback(null, require('./components/App').default)
         })
     },
 
@@ -20,9 +21,9 @@ const appRoute = {
     getChildRoutes(partialNextState, callback) {
         require.ensure([], (require) => {
             callback(null, [
-                require('./routes/Register'),
-                require('./routes/Login'),
-                require('./routes/Events')
+                require('./routes/Register').default,
+                require('./routes/Login').default,
+                require('./routes/LoginRequired').default
             ])
         })
     }

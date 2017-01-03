@@ -8,4 +8,4 @@ const loginRoute = {
     }
 }
 
-module.exports = loginRoute
+export default loginRoute

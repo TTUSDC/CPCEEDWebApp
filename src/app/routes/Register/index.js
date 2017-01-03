@@ -8,4 +8,4 @@ const registerRoute = {
     }
 }
 
-module.exports = registerRoute
+export default registerRoute

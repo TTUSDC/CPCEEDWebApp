@@ -3,9 +3,9 @@ const eventsRoute = {
 
 	getComponents(nextState, callback) {
 		require.ensure([], (require) => {
-			callback(null, require('./components/Events'))
+			callback(null, require('./components/Events').default)
 		})
 	}
 }
 
-module.exports = eventsRoute
+export default eventsRoute
