@@ -4,17 +4,34 @@ import * as firebase from 'firebase';
 import { connect } from 'react-redux';
 
 import { setAuthState } from 'redux/actions.js';
+import logger from 'logger/logger.js';
 import Auth from './Auth.js';
 
 class AuthContainer extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      logErr: '',
+      regErr: '',
+      waiting: false
+    };
 
+    /*
+      Only functions that are being passed out of this scope, as in the case
+      of passing props to children, need to be bound. This ensures that they
+      can still access the scope of this component even though they are
+      being called from another component.
+    */
     this.handleRegister = this.handleRegister.bind(this);
     this.handleLogin = this.handleLogin.bind(this);
   }
 
   handleRegister(data) {
+    this.setState({
+      waiting: true,
+      regErr: ''
+    });
+
     firebase.auth().createUserWithEmailAndPassword(data.email, data.password)
       .then((user) => {
         firebase.database().ref().child('users/' + user.uid).set({
@@ -26,25 +43,31 @@ class AuthContainer extends React.Component {
           studentId: data.studentID,
           role: data.role
         })
-          .then(() => {
-            console.log("User was registered");
+      })
+      .then(() => {
+        logger.info('User was registered');
 
-            this.props.dispatch(setAuthState(data.role));
+        this.props.dispatch(setAuthState(data.role));
 
-            if(this.props.authFinished) {
-              this.props.authFinished();
-            }
-          })
-          .catch((e) => {
-            console.log(e.message);
-          });
+        if(this.props.authFinished) {
+          this.props.authFinished();
+        }
       })
       .catch((e) => {
-        console.log(e.message);
+        logger.error(e.message);
+        this.setState({
+          regErr: e.message,
+          waiting: false
+        });
       });
   }
 
   handleLogin(email, password) {
+    this.setState({
+      waiting: true,
+      logErr: ''
+    });
+
     firebase.auth().signInWithEmailAndPassword(email, password)
       .then((user) => {
         const rootRef = firebase.database().ref();
@@ -52,7 +75,7 @@ class AuthContainer extends React.Component {
 
         userRef.once('value')
           .then((snapshot) => {
-            console.log("User was logged in");
+            logger.info('User was logged in');
 
             this.props.dispatch(setAuthState(snapshot.val()));
 
@@ -62,7 +85,11 @@ class AuthContainer extends React.Component {
           });
       })
       .catch((e) => {
-        console.log(e.message);
+        logger.error(e.message);
+        this.setState({
+          logErr: e.message,
+          waiting: false
+        });
       });
   }
 
@@ -71,7 +98,10 @@ class AuthContainer extends React.Component {
       <Auth
         handleRegister={this.handleRegister}
         handleLogin={this.handleLogin}
-        authCancelled={this.props.authCancelled}/>
+        authCancelled={this.props.authCancelled}
+        regErr={this.state.regErr}
+        logErr={this.state.logErr}
+        waiting={this.state.waiting} />
     );
   }
 }

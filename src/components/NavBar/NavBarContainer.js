@@ -4,6 +4,7 @@ import * as firebase from 'firebase';
 import { connect } from 'react-redux';
 
 import { setAuthState, AuthStates } from 'redux/actions.js';
+import logger from 'logger/logger.js';
 import NavBar from './NavBar.js';
 
 class NavBarContainer extends React.Component {
@@ -18,7 +19,17 @@ class NavBarContainer extends React.Component {
     this.logout = this.logout.bind(this);
   }
 
-  // Navigate by pushing the relative URL to the router
+  /*
+    Navigates by pushing the relative URL to the router.
+
+    navigate needs to be wrapped in an arrow function before being passed
+    to onClick because it has a custom parameter. onClick only passes an
+    event, so it won't know how to supply other parameters. But you can't
+    add parentheses to navigate because that would call it rather than
+    passing it as a variable. Arrow functions allow navigate to have
+    parentheses because they wrap it in a variable, so the function call
+    doesn't happen until the variable is called as a function.
+  */
   navigate(url) {
     this.props.router.push(url);
   }
@@ -26,13 +37,13 @@ class NavBarContainer extends React.Component {
   logout() {
     firebase.auth().signOut()
       .then(() => {
-        console.log("User was signed out");
+        logger.info("User was signed out");
 
         // Set permissions to guest
         this.props.dispatch(setAuthState(AuthStates.GUEST));
       })
       .catch((e) => {
-        console.log(e.message);
+        logger.error(e.message);
       });
 
     this.props.router.push('/');
